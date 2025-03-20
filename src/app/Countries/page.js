@@ -2,6 +2,55 @@
 import { useEffect, useState } from "react";
 import { useApolloClient, gql } from "@apollo/client";
 import Link from "next/link";
+import styled from "styled-components"; 
+
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+`;
+
+const Th = styled.th`
+  background: #007bff;
+  color: white;
+  padding: 10px;
+  text-align: left;
+`;
+
+const Td = styled.td`
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+`;
+
+const Tr = styled.tr`
+  &:nth-child(even) {
+    background: #f2f2f2;
+  }
+`;
+
+const Button = styled.button`
+  padding: 8px 12px;
+  margin: 5px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  &:hover {
+    background: #0056b3;
+  }
+  &:disabled {
+    background: gray;
+    cursor: not-allowed;
+  }
+`;
 
 export default function CountriesPage() {
   const [countries, setCountries] = useState([]);
@@ -12,8 +61,6 @@ export default function CountriesPage() {
   const [selectedCountries, setSelectedCountries] = useState([]);
   const itemsPerPage = 10;
   const client = useApolloClient();
-
-  // Fetch countries data
   const fetchCountries = async () => {
     setLoading(true);
     setError(null);
@@ -50,17 +97,17 @@ export default function CountriesPage() {
     fetchCountries();
   }, [client]);
 
-  // Filter countries based on search query
+
   const filteredCountries = countries.filter((country) =>
     country.name.common.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Pagination logic
+
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const displayedCountries = filteredCountries.slice(startIndex, endIndex);
 
-  // Handle country selection for comparison
+
   const handleSelectCountry = (country) => {
     if (selectedCountries.some((c) => c.cca2 === country.cca2)) {
       setSelectedCountries((prev) =>
@@ -71,7 +118,7 @@ export default function CountriesPage() {
     }
   };
 
-  // **Loading State**
+
   if (loading) {
     return (
       <div style={{ textAlign: "center", padding: "20px" }}>
@@ -97,7 +144,7 @@ export default function CountriesPage() {
     );
   }
 
-  // **Error State**
+
   if (error) {
     return (
       <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
@@ -113,7 +160,7 @@ export default function CountriesPage() {
     <div>
       <h1>Country List</h1>
 
-      {/* Search Bar */}
+
       <input
         type="text"
         placeholder="Search countries..."
@@ -127,28 +174,26 @@ export default function CountriesPage() {
         }}
       />
 
-      {/* No Results Found */}
       {filteredCountries.length === 0 && (
         <p style={{ textAlign: "center" }}>No countries found.</p>
       )}
 
-      {/* Country Table */}
       {filteredCountries.length > 0 && (
-        <table border="1">
+        <Table>
           <thead>
             <tr>
-              <th>Select</th>
-              <th>Name</th>
-              <th>Population</th>
-              <th>Area</th>
-              <th>Capital</th>
-              <th>Currency</th>
+              <Th>Select</Th>
+              <Th>Name</Th>
+              <Th>Population</Th>
+              <Th>Area</Th>
+              <Th>Capital</Th>
+              <Th>Currency</Th>
             </tr>
           </thead>
           <tbody>
             {displayedCountries.map((country) => (
-              <tr key={country.cca2}>
-                <td>
+              <Tr key={country.cca2}>
+                <Td>
                   <input
                     type="checkbox"
                     checked={selectedCountries.some(
@@ -160,38 +205,37 @@ export default function CountriesPage() {
                       !selectedCountries.some((c) => c.cca2 === country.cca2)
                     }
                   />
-                </td>
-                <td>
+                </Td>
+                <Td>
                   <Link href={`/country/${country.name.common}`}>
                     {country.name.common}
                   </Link>
-                </td>
-                <td>{country.population?.toLocaleString() ?? "N/A"}</td>
-                <td>{country.area?.toLocaleString() ?? "N/A"}</td>
-                <td>{country.capital?.[0] ?? "N/A"}</td>
-                <td>
+                </Td>
+                <Td>{country.population?.toLocaleString() ?? "N/A"}</Td>
+                <Td>{country.area?.toLocaleString() ?? "N/A"}</Td>
+                <Td>{country.capital?.[0] ?? "N/A"}</Td>
+                <Td>
                   {country.currencies
                     ? Object.values(country.currencies)
                         .map((currency) => currency.name)
                         .join(", ")
                     : "N/A"}
-                </td>
-              </tr>
+                </Td>
+              </Tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       )}
 
-      {/* Pagination Controls */}
       <div>
-        <button
+        <Button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
           Previous
-        </button>
+        </Button>
         <span> Page {currentPage} </span>
-        <button
+        <Button
           onClick={() =>
             setCurrentPage((prev) =>
               prev < Math.ceil(filteredCountries.length / itemsPerPage)
@@ -202,41 +246,8 @@ export default function CountriesPage() {
           disabled={endIndex >= filteredCountries.length}
         >
           Next
-        </button>
+        </Button>
       </div>
-
-      {/* Country Comparison Section */}
-      {selectedCountries.length === 2 && (
-        <div style={{ marginTop: "20px", padding: "10px", border: "1px solid black" }}>
-          <h2>Country Comparison</h2>
-          <table border="1">
-            <thead>
-              <tr>
-                <th>Feature</th>
-                <th>{selectedCountries[0].name.common}</th>
-                <th>{selectedCountries[1].name.common}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Population</td>
-                <td>{selectedCountries[0].population.toLocaleString()}</td>
-                <td>{selectedCountries[1].population.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td>Area (sq km)</td>
-                <td>{selectedCountries[0].area.toLocaleString()}</td>
-                <td>{selectedCountries[1].area.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td>Capital</td>
-                <td>{selectedCountries[0].capital?.[0] ?? "N/A"}</td>
-                <td>{selectedCountries[1].capital?.[0] ?? "N/A"}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-"use client"; // This is necessary because we're using client-side code
+"use client";
 
 import { ApolloProvider } from "@apollo/client";
 import client from "../lib/apolloClient";

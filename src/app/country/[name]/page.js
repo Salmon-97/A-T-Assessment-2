@@ -3,13 +3,12 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function CountryDetailsPage() {
-  const { name } = useParams(); // Get the country name from the URL
-  const decodedName = decodeURIComponent(name); // Decode the country name
-  const [country, setCountry] = useState(null); // State to store country details
-  const [loading, setLoading] = useState(true); // State to handle loading
-  const [error, setError] = useState(null); // State to handle errors
+  const { name } = useParams();
+  const decodedName = decodeURIComponent(name);
+  const [country, setCountry] = useState(null); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Fetch country details from the REST API
   useEffect(() => {
     const fetchCountry = async () => {
       try {
@@ -20,12 +19,12 @@ export default function CountryDetailsPage() {
           throw new Error("Failed to fetch data");
         }
         const data = await response.json();
-        console.log("API Response:", data); // Debugging: Log the API response
-        setCountry(data[0]); // Set the fetched data to state
+        console.log("API Response:", data); 
+        setCountry(data[0]); 
       } catch (error) {
-        setError(error.message); // Set error message if something goes wrong
+        setError(error.message);
       } finally {
-        setLoading(false); // Set loading to false after the request completes
+        setLoading(false);
       }
     };
 
@@ -34,7 +33,7 @@ export default function CountryDetailsPage() {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
-  if (!country) return <p>No country data found.</p>; // Handle missing data
+  if (!country) return <p>No country data found.</p>; 
 
   return (
     <div>
