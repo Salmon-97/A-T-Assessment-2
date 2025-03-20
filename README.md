@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+I named my project - Accolade Tech Assessment
 
-## Getting Started
+Project Overview
 
-First, run the development server:
+This project is a Next.js web application that fetches and displays country data from the REST Countries API. The app utilizes Apollo Client for state management and caching.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Fetch and Display Country List: Retrieves country data and displays it in a paginated table.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- Country Details Page: Dynamic route for viewing details of a selected country by clicking on the country name.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Search Functionality: Users can search for countries from the displayed list using the search bar.
 
-## Learn More
+- Country Comparison: Allows users to compare two countries based on population, area, etc.
 
-To learn more about Next.js, take a look at the following resources:
+- Error Handling & Loading States: Ensures a smooth user experience with appropriate messages and loaders.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Styled Components: All styling is done using Styled Components.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Technologies Used
 
-## Deploy on Vercel
+- Next.js
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- React
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Apollo Client
+
+- REST Countries API
+
+- Styled Components
+
+
+Steps
+
+- Clone the repository.
+
+- Navigate to the project directory.
+
+- Install dependencies.
+
+- Start the development server.
+
+- Open the application in your browser at.
+
+Usage
+
+- Browse the list of countries.
+
+- Click on a country to view detailed information.
+
+- Use the search bar to filter displayed countries.
+
+- Compare two countries based on population, area, and GDP.
+
+Deployment
+
+(Provide the deployment link here once the app is deployed)
+
+Author
+
+[Munirat Salmon]
