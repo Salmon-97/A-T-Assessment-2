@@ -2,9 +2,8 @@
 import { useEffect, useState } from "react";
 import { useApolloClient, gql } from "@apollo/client";
 import Link from "next/link";
-import styled from "styled-components"; // Styled-components added back
+import styled from "styled-components"; 
 
-// Styled Components for Table & Buttons
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -20,7 +19,7 @@ const Table = styled.table`
   }
 
   th {
-    background-color: #222; /* Dark background for contrast */
+    background-color: #222; 
     color: white;
   }
 
