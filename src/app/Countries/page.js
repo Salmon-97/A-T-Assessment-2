@@ -8,7 +8,9 @@ const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   overflow-x: auto;
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   max-width: 100%;
   white-space: nowrap;
 
