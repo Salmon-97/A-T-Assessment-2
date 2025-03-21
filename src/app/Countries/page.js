@@ -23,7 +23,7 @@ const SearchBar = styled.input`
 
 const TableWrapper = styled.div`
   width: 100%;
-  overflow-x: auto; /* Enables horizontal scroll on mobile */
+  overflow-x: auto;
 `;
 
 const Table = styled.table`
@@ -33,8 +33,8 @@ const Table = styled.table`
   margin: auto;
 
   thead {
-    background-color: #333; /* Dark header background */
-    color: white; /* White text for visibility */
+    background-color: #333;
+    color: white;
   }
 
   th, td {
@@ -44,7 +44,8 @@ const Table = styled.table`
   }
 
   tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: black;
+    color: white;
   }
 `;
 
