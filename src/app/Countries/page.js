@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useApolloClient, gql } from "@apollo/client";
 import Link from "next/link";
-import styled from "styled-components"; // Import styled-components
+import styled from "styled-components";
 
 export default function CountriesPage() {
   const [countries, setCountries] = useState([]);
