@@ -2,55 +2,7 @@
 import { useEffect, useState } from "react";
 import { useApolloClient, gql } from "@apollo/client";
 import Link from "next/link";
-import styled from "styled-components"; 
-
-
-const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  background: #f8f9fa;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-`;
-
-const Th = styled.th`
-  background: #007bff;
-  color: white;
-  padding: 10px;
-  text-align: left;
-`;
-
-const Td = styled.td`
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
-`;
-
-const Tr = styled.tr`
-  &:nth-child(even) {
-    background: #f2f2f2;
-  }
-`;
-
-const Button = styled.button`
-  padding: 8px 12px;
-  margin: 5px;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.3s;
-  &:hover {
-    background: #0056b3;
-  }
-  &:disabled {
-    background: gray;
-    cursor: not-allowed;
-  }
-`;
+import styled from "styled-components"; // Import styled-components
 
 export default function CountriesPage() {
   const [countries, setCountries] = useState([]);
@@ -61,6 +13,7 @@ export default function CountriesPage() {
   const [selectedCountries, setSelectedCountries] = useState([]);
   const itemsPerPage = 10;
   const client = useApolloClient();
+
   const fetchCountries = async () => {
     setLoading(true);
     setError(null);
@@ -97,16 +50,13 @@ export default function CountriesPage() {
     fetchCountries();
   }, [client]);
 
-
   const filteredCountries = countries.filter((country) =>
     country.name.common.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const displayedCountries = filteredCountries.slice(startIndex, endIndex);
-
 
   const handleSelectCountry = (country) => {
     if (selectedCountries.some((c) => c.cca2 === country.cca2)) {
@@ -118,82 +68,48 @@ export default function CountriesPage() {
     }
   };
 
-
   if (loading) {
-    return (
-      <div style={{ textAlign: "center", padding: "20px" }}>
-        <p>Loading countries...</p>
-        <div className="spinner"></div>
-        <style jsx>{`
-          .spinner {
-            margin: 10px auto;
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #333;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-          }
-          @keyframes spin {
-            to {
-              transform: rotate(360deg);
-            }
-          }
-        `}</style>
-      </div>
-    );
+    return <LoadingMessage>Loading countries...</LoadingMessage>;
   }
-
 
   if (error) {
     return (
-      <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
+      <ErrorMessage>
         <p>Error: {error}</p>
-        <button onClick={fetchCountries} style={{ padding: "10px" }}>
-          Retry
-        </button>
-      </div>
+        <button onClick={fetchCountries}>Retry</button>
+      </ErrorMessage>
     );
   }
 
   return (
-    <div>
-      <h1>Country List</h1>
+    <Container>
+      <Title>Country List</Title>
 
-
-      <input
+      <SearchBar
         type="text"
         placeholder="Search countries..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        style={{
-          padding: "10px",
-          marginBottom: "15px",
-          width: "100%",
-          maxWidth: "300px",
-        }}
       />
 
-      {filteredCountries.length === 0 && (
-        <p style={{ textAlign: "center" }}>No countries found.</p>
-      )}
-
-      {filteredCountries.length > 0 && (
-        <Table>
+      {filteredCountries.length === 0 ? (
+        <NoResults>No countries found.</NoResults>
+      ) : (
+        <StyledTable>
           <thead>
             <tr>
-              <Th>Select</Th>
-              <Th>Name</Th>
-              <Th>Population</Th>
-              <Th>Area</Th>
-              <Th>Capital</Th>
-              <Th>Currency</Th>
+              <th>Select</th>
+              <th>Name</th>
+              <th>Population</th>
+              <th>Area</th>
+              <th>Capital</th>
+              <th>Currency</th>
             </tr>
           </thead>
           <tbody>
             {displayedCountries.map((country) => (
-              <Tr key={country.cca2}>
-                <Td>
+              <tr key={country.cca2}>
+                <td>
                   <input
                     type="checkbox"
                     checked={selectedCountries.some(
@@ -205,37 +121,37 @@ export default function CountriesPage() {
                       !selectedCountries.some((c) => c.cca2 === country.cca2)
                     }
                   />
-                </Td>
-                <Td>
+                </td>
+                <td>
                   <Link href={`/country/${country.name.common}`}>
                     {country.name.common}
                   </Link>
-                </Td>
-                <Td>{country.population?.toLocaleString() ?? "N/A"}</Td>
-                <Td>{country.area?.toLocaleString() ?? "N/A"}</Td>
-                <Td>{country.capital?.[0] ?? "N/A"}</Td>
-                <Td>
+                </td>
+                <td>{country.population?.toLocaleString() ?? "N/A"}</td>
+                <td>{country.area?.toLocaleString() ?? "N/A"}</td>
+                <td>{country.capital?.[0] ?? "N/A"}</td>
+                <td>
                   {country.currencies
                     ? Object.values(country.currencies)
                         .map((currency) => currency.name)
                         .join(", ")
                     : "N/A"}
-                </Td>
-              </Tr>
+                </td>
+              </tr>
             ))}
           </tbody>
-        </Table>
+        </StyledTable>
       )}
 
-      <div>
-        <Button
+      <Pagination>
+        <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
           Previous
-        </Button>
+        </button>
         <span> Page {currentPage} </span>
-        <Button
+        <button
           onClick={() =>
             setCurrentPage((prev) =>
               prev < Math.ceil(filteredCountries.length / itemsPerPage)
@@ -246,8 +162,100 @@ export default function CountriesPage() {
           disabled={endIndex >= filteredCountries.length}
         >
           Next
-        </Button>
-      </div>
-    </div>
+        </button>
+      </Pagination>
+
+      {selectedCountries.length === 2 && (
+        <ComparisonContainer>
+          <h2>Country Comparison</h2>
+          <StyledTable>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>{selectedCountries[0].name.common}</th>
+                <th>{selectedCountries[1].name.common}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Population</td>
+                <td>{selectedCountries[0].population.toLocaleString()}</td>
+                <td>{selectedCountries[1].population.toLocaleString()}</td>
+              </tr>
+              <tr>
+                <td>Area (sq km)</td>
+                <td>{selectedCountries[0].area.toLocaleString()}</td>
+                <td>{selectedCountries[1].area.toLocaleString()}</td>
+              </tr>
+              <tr>
+                <td>Capital</td>
+                <td>{selectedCountries[0].capital?.[0] ?? "N/A"}</td>
+                <td>{selectedCountries[1].capital?.[0] ?? "N/A"}</td>
+              </tr>
+            </tbody>
+          </StyledTable>
+        </ComparisonContainer>
+      )}
+    </Container>
   );
 }
+
+// Styled Components
+const Container = styled.div`
+  max-width: 800px;
+  margin: auto;
+  text-align: center;
+`;
+
+const Title = styled.h1`
+  color: #333;
+`;
+
+const SearchBar = styled.input`
+  padding: 10px;
+  margin-bottom: 15px;
+  width: 100%;
+  max-width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+`;
+
+const NoResults = styled.p`
+  text-align: center;
+  font-weight: bold;
+`;
+
+const StyledTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f4f4f4;
+  }
+`;
+
+const Pagination = styled.div`
+  margin-top: 20px;
+`;
+
+const ComparisonContainer = styled.div`
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid black;
+`;
+
+const LoadingMessage = styled.p`
+  text-align: center;
+`;
+
+const ErrorMessage = styled.div`
+  text-align: center;
+  color: red;
+`;
