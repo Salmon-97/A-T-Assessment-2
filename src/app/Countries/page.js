@@ -4,6 +4,35 @@ import { useApolloClient, gql } from "@apollo/client";
 import Link from "next/link";
 import styled from "styled-components";
 
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto;
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    background-color: #222; /* Dark background for contrast */
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    display: block;
+    overflow-x: auto;
+  }
+`;
+
+const Container = styled.div`
+  overflow-x: auto;
+`;
+
 export default function CountriesPage() {
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -69,33 +98,33 @@ export default function CountriesPage() {
   };
 
   if (loading) {
-    return <LoadingMessage>Loading countries...</LoadingMessage>;
+    return <p>Loading countries...</p>;
   }
 
   if (error) {
     return (
-      <ErrorMessage>
+      <div>
         <p>Error: {error}</p>
         <button onClick={fetchCountries}>Retry</button>
-      </ErrorMessage>
+      </div>
     );
   }
 
   return (
     <Container>
-      <Title>Country List</Title>
-
-      <SearchBar
+      <h1>Country List</h1>
+      <input
         type="text"
         placeholder="Search countries..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
+        style={{ padding: "10px", marginBottom: "15px", width: "100%", maxWidth: "300px" }}
       />
 
-      {filteredCountries.length === 0 ? (
-        <NoResults>No countries found.</NoResults>
-      ) : (
-        <StyledTable>
+      {filteredCountries.length === 0 && <p>No countries found.</p>}
+
+      {filteredCountries.length > 0 && (
+        <Table>
           <thead>
             <tr>
               <th>Select</th>
@@ -129,133 +158,4 @@ export default function CountriesPage() {
                 </td>
                 <td>{country.population?.toLocaleString() ?? "N/A"}</td>
                 <td>{country.area?.toLocaleString() ?? "N/A"}</td>
-                <td>{country.capital?.[0] ?? "N/A"}</td>
-                <td>
-                  {country.currencies
-                    ? Object.values(country.currencies)
-                        .map((currency) => currency.name)
-                        .join(", ")
-                    : "N/A"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </StyledTable>
-      )}
-
-      <Pagination>
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-        <span> Page {currentPage} </span>
-        <button
-          onClick={() =>
-            setCurrentPage((prev) =>
-              prev < Math.ceil(filteredCountries.length / itemsPerPage)
-                ? prev + 1
-                : prev
-            )
-          }
-          disabled={endIndex >= filteredCountries.length}
-        >
-          Next
-        </button>
-      </Pagination>
-
-      {selectedCountries.length === 2 && (
-        <ComparisonContainer>
-          <h2>Country Comparison</h2>
-          <StyledTable>
-            <thead>
-              <tr>
-                <th>Feature</th>
-                <th>{selectedCountries[0].name.common}</th>
-                <th>{selectedCountries[1].name.common}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Population</td>
-                <td>{selectedCountries[0].population.toLocaleString()}</td>
-                <td>{selectedCountries[1].population.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td>Area (sq km)</td>
-                <td>{selectedCountries[0].area.toLocaleString()}</td>
-                <td>{selectedCountries[1].area.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td>Capital</td>
-                <td>{selectedCountries[0].capital?.[0] ?? "N/A"}</td>
-                <td>{selectedCountries[1].capital?.[0] ?? "N/A"}</td>
-              </tr>
-            </tbody>
-          </StyledTable>
-        </ComparisonContainer>
-      )}
-    </Container>
-  );
-}
-
-// Styled Components
-const Container = styled.div`
-  max-width: 800px;
-  margin: auto;
-  text-align: center;
-`;
-
-const Title = styled.h1`
-  color: #333;
-`;
-
-const SearchBar = styled.input`
-  padding: 10px;
-  margin-bottom: 15px;
-  width: 100%;
-  max-width: 300px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-`;
-
-const NoResults = styled.p`
-  text-align: center;
-  font-weight: bold;
-`;
-
-const StyledTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-
-  th, td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-  }
-
-  th {
-    background-color: #f4f4f4;
-  }
-`;
-
-const Pagination = styled.div`
-  margin-top: 20px;
-`;
-
-const ComparisonContainer = styled.div`
-  margin-top: 20px;
-  padding: 10px;
-  border: 1px solid black;
-`;
-
-const LoadingMessage = styled.p`
-  text-align: center;
-`;
-
-const ErrorMessage = styled.div`
-  text-align: center;
-  color: red;
-`;
+                <td>{country.capital?.[
