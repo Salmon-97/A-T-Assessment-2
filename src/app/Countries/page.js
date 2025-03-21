@@ -2,8 +2,9 @@
 import { useEffect, useState } from "react";
 import { useApolloClient, gql } from "@apollo/client";
 import Link from "next/link";
-import styled from "styled-components";
+import styled from "styled-components"; // Styled-components added back
 
+// Styled Components for Table & Buttons
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -158,4 +159,73 @@ export default function CountriesPage() {
                 </td>
                 <td>{country.population?.toLocaleString() ?? "N/A"}</td>
                 <td>{country.area?.toLocaleString() ?? "N/A"}</td>
-                <td>{country.capital?.[
+                <td>{country.capital?.[0] ?? "N/A"}</td>
+                <td>
+                  {country.currencies
+                    ? Object.values(country.currencies)
+                        .map((currency) => currency.name)
+                        .join(", ")
+                    : "N/A"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
+
+      <div>
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span> Page {currentPage} </span>
+        <button
+          onClick={() =>
+            setCurrentPage((prev) =>
+              prev < Math.ceil(filteredCountries.length / itemsPerPage)
+                ? prev + 1
+                : prev
+            )
+          }
+          disabled={endIndex >= filteredCountries.length}
+        >
+          Next
+        </button>
+      </div>
+
+      {selectedCountries.length === 2 && (
+        <div style={{ marginTop: "20px", padding: "10px", border: "1px solid black" }}>
+          <h2>Country Comparison</h2>
+          <Table>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>{selectedCountries[0].name.common}</th>
+                <th>{selectedCountries[1].name.common}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Population</td>
+                <td>{selectedCountries[0].population.toLocaleString()}</td>
+                <td>{selectedCountries[1].population.toLocaleString()}</td>
+              </tr>
+              <tr>
+                <td>Area (sq km)</td>
+                <td>{selectedCountries[0].area.toLocaleString()}</td>
+                <td>{selectedCountries[1].area.toLocaleString()}</td>
+              </tr>
+              <tr>
+                <td>Capital</td>
+                <td>{selectedCountries[0].capital?.[0] ?? "N/A"}</td>
+                <td>{selectedCountries[1].capital?.[0] ?? "N/A"}</td>
+              </tr>
+            </tbody>
+          </Table>
+        </div>
+      )}
+    </Container>
+  );
+          }
