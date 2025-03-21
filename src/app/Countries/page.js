@@ -4,35 +4,62 @@ import { useApolloClient, gql } from "@apollo/client";
 import Link from "next/link";
 import styled from "styled-components"; 
 
+
+const PageWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+`;
+
+const SearchBar = styled.input`
+  padding: 10px;
+  margin-bottom: 15px;
+  width: 100%;
+  max-width: 300px;
+`;
+
+const TableWrapper = styled.div`
+  width: 100%;
+  overflow-x: auto; /* Enables horizontal scroll on mobile */
+`;
+
 const Table = styled.table`
   width: 100%;
+  max-width: 800px;
   border-collapse: collapse;
-  overflow-x: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  max-width: 100%;
-  white-space: nowrap;
+  margin: auto;
+
+  thead {
+    background-color: #333; /* Dark header background */
+    color: white; /* White text for visibility */
+  }
 
   th, td {
+    border: 1px solid #ddd;
     padding: 10px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
   }
 
-  th {
-    background-color: #222; 
-    color: white;
-  }
-
-  @media (max-width: 768px) {
-    display: block;
-    overflow-x: auto;
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
   }
 `;
 
-const Container = styled.div`
-  overflow-x: auto;
+const ButtonContainer = styled.div`
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+`;
+
+const ComparisonBox = styled.div`
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid black;
+  text-align: center;
 `;
 
 export default function CountriesPage() {
@@ -45,6 +72,7 @@ export default function CountriesPage() {
   const itemsPerPage = 10;
   const client = useApolloClient();
 
+  
   const fetchCountries = async () => {
     setLoading(true);
     setError(null);
@@ -81,51 +109,33 @@ export default function CountriesPage() {
     fetchCountries();
   }, [client]);
 
+
   const filteredCountries = countries.filter((country) =>
     country.name.common.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const displayedCountries = filteredCountries.slice(startIndex, endIndex);
 
-  const handleSelectCountry = (country) => {
-    if (selectedCountries.some((c) => c.cca2 === country.cca2)) {
-      setSelectedCountries((prev) =>
-        prev.filter((c) => c.cca2 !== country.cca2)
-      );
-    } else if (selectedCountries.length < 2) {
-      setSelectedCountries((prev) => [...prev, country]);
-    }
-  };
-
-  if (loading) {
-    return <p>Loading countries...</p>;
-  }
-
-  if (error) {
-    return (
-      <div>
-        <p>Error: {error}</p>
-        <button onClick={fetchCountries}>Retry</button>
-      </div>
-    );
-  }
-
   return (
-    <Container>
+    <PageWrapper>
       <h1>Country List</h1>
-      <input
+
+    
+      <SearchBar
         type="text"
         placeholder="Search countries..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        style={{ padding: "10px", marginBottom: "15px", width: "100%", maxWidth: "300px" }}
       />
 
+      
       {filteredCountries.length === 0 && <p>No countries found.</p>}
 
-      {filteredCountries.length > 0 && (
+      
+      <TableWrapper>
         <Table>
           <thead>
             <tr>
@@ -146,11 +156,11 @@ export default function CountriesPage() {
                     checked={selectedCountries.some(
                       (c) => c.cca2 === country.cca2
                     )}
-                    onChange={() => handleSelectCountry(country)}
-                    disabled={
-                      selectedCountries.length >= 2 &&
-                      !selectedCountries.some((c) => c.cca2 === country.cca2)
-                    }
+                    onChange={() => setSelectedCountries((prev) =>
+                      prev.some((c) => c.cca2 === country.cca2)
+                        ? prev.filter((c) => c.cca2 !== country.cca2)
+                        : prev.length < 2 ? [...prev, country] : prev
+                    )}
                   />
                 </td>
                 <td>
@@ -172,9 +182,10 @@ export default function CountriesPage() {
             ))}
           </tbody>
         </Table>
-      )}
+      </TableWrapper>
 
-      <div>
+    
+      <ButtonContainer>
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
@@ -194,10 +205,11 @@ export default function CountriesPage() {
         >
           Next
         </button>
-      </div>
+      </ButtonContainer>
 
+      
       {selectedCountries.length === 2 && (
-        <div style={{ marginTop: "20px", padding: "10px", border: "1px solid black" }}>
+        <ComparisonBox>
           <h2>Country Comparison</h2>
           <Table>
             <thead>
@@ -225,8 +237,8 @@ export default function CountriesPage() {
               </tr>
             </tbody>
           </Table>
-        </div>
+        </ComparisonBox>
       )}
-    </Container>
+    </PageWrapper>
   );
-          }
+        }
